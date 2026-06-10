@@ -139,7 +139,7 @@ def crack_rar(
             rf.testrar()
             yield tried, total, pw
             return
-        except rarfile.BadRarPassword:
+        except (rarfile.RarWrongPassword, rarfile.RarCRCError, rarfile.PasswordRequired):
             pass
         except Exception:
             pass
