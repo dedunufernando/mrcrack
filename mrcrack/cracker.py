@@ -84,20 +84,43 @@ def crack_zip(
 
 # ── RAR ────────────────────────────────────────────────────────────────────────
 
+def _configure_rarfile() -> None:
+    """Auto-detect UnRAR binary and configure rarfile."""
+    import rarfile  # type: ignore
+    import shutil
+
+    # Already configured or on PATH
+    if shutil.which("unrar") or shutil.which("UnRAR"):
+        return
+
+    # Common WinRAR install locations on Windows
+    candidates = [
+        r"C:\Program Files\WinRAR\UnRAR.exe",
+        r"C:\Program Files (x86)\WinRAR\UnRAR.exe",
+        r"C:\Program Files\WinRAR\Rar.exe",
+        r"C:\Program Files (x86)\WinRAR\Rar.exe",
+    ]
+    for path in candidates:
+        if Path(path).exists():
+            rarfile.UNRAR_TOOL = path
+            return
+
+
 def crack_rar(
     archive: str,
     wordlist: str,
     stop_flag,
 ) -> Generator[tuple[int, int, str | None], None, None]:
-    """Crack a RAR archive. Requires `pip install rarfile` and unrar on PATH."""
+    """Crack a RAR archive. Requires pip install rarfile  (unrar auto-detected)."""
     try:
         import rarfile  # type: ignore
     except ImportError:
         raise ValueError(
             "RAR cracking requires the 'rarfile' package.\n"
-            "Run:  pip install rarfile\n"
-            "And install unrar:  https://www.rarlab.com/rar_add.htm"
+            "Run:  pip install rarfile"
         )
+
+    _configure_rarfile()
 
     try:
         rf = rarfile.RarFile(archive)
