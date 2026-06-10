@@ -1,0 +1,7 @@
+# Core — no extra deps needed for ZIP cracking (uses Python built-in zipfile)
+
+# Optional — install for RAR support:
+# rarfile>=4.1
+
+# Optional — install for 7-Zip support:
+# py7zr>=0.20
